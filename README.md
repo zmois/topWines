@@ -1,4 +1,4 @@
-**Code Louisville topWines Go project
+# Code Louisville topWines Go project
 
 This project is using data from https://www.wine-searcher.com/. The Wine-Searcher is a free database and search engine for for wine, beer, or spirit around the world.  
 
