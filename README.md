@@ -2,7 +2,7 @@
 
 ## topWines Go Project for Code Louisville
 
-This project is using data from https://www.wine-searcher.com/. The Wine-Searcher is a free database and search engine for for wine, beer, or spirit around the world.  
+This project is using data 2020 Wine Spectator Top 100 Wines from https://www.wine-searcher.com/. The Wine-Searcher is a free database and search engine for for wine, beer, or spirit around the world. 
 
 ## Requirements
 - Go version 1.17 
