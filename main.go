@@ -19,32 +19,32 @@ var tpl *template.Template
 
 // Create a struct for storing CSV lines and annotate it with JSON struct field tags
 type Wine struct {
-	Item        int    `json:"item"`
+	Rank        int    `json:"rank"`
 	Name        string `json:"name"`
 	Country     string `json:"country"`
 	Region      string `json:"region"`
 	Style       string `json:"style"`
 	Description string `json:"description"`
-	Grape       string `json:"grape"`
+	Grapes      string `json:"grapes"`
 	PairWith    string `json:"pairWith"`
 	AvgPrice    int    `json:"avgPriceUSD"`
 	Vintage     int    `json:"vintage"`
 	Score       int    `json:"score"`
 }
 
-// type ResultProfile struct {
-// 	Header   string
-// 	Grape    string
-// 	Name     string
-// 	Country  string
-// 	Region   string
-// 	Style    string
-// 	PairWith string
-// 	AvgPrice string
-// 	Vintage  string
-// 	Score    string
-// 	Dec      string
-// }
+type Profile struct {
+	Header   string
+	Grapes   string
+	Name     string
+	Country  string
+	Region   string
+	Style    string
+	PairWith string
+	AvgPrice string
+	Vintage  string
+	Score    string
+	Desc     string
+}
 
 func main() {
 	mux := http.NewServeMux()
@@ -52,7 +52,7 @@ func main() {
 	mux.HandleFunc("/", index)
 	mux.Handle("/assets/", http.StripPrefix("/assets", http.FileServer((http.Dir("./served")))))
 	mux.HandleFunc("/search", searchProcess)
-	mux.HandleFunc("/results", resultProfile)
+	// mux.HandleFunc("/results", resultProfile)
 	http.ListenAndServe(":8080", mux)
 }
 
@@ -71,7 +71,12 @@ func init() {
 func index(w http.ResponseWriter, r *http.Request) {
 	tpl.ExecuteTemplate(w, "index.gohtml", nil)
 }
+
 func searchProcess(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 	records, err := OpenFile(filename)
 	if err != nil {
 		log.Fatal((err))
@@ -83,14 +88,14 @@ func searchProcess(w http.ResponseWriter, r *http.Request) {
 	wineType := strings.Title(r.FormValue("winename"))
 	results := SearchFor(wineType, wines)
 	WineInfo(results)
-	// fmt.Fprintln(w, "Successful")
-	// tpl.ExecuteTemplate(w, "results.gohtml", nil)
-}
-
-func resultProfile(w http.ResponseWriter, r *http.Request) {
 
 	tpl.ExecuteTemplate(w, "results.gohtml", nil)
 }
+
+// func resultProfile(w http.ResponseWriter, r *http.Request) {
+// 	fmt.Fprintln(w, "Successful")
+// 	tpl.ExecuteTemplate(w, "results.gohtml", nil)
+// }
 
 // --- Loading the Wine List ---//
 func OpenFile(filename string) ([][]string, error) {
@@ -113,19 +118,19 @@ func OpenFile(filename string) ([][]string, error) {
 func WineList(records [][]string) []Wine {
 	var wines []Wine
 	for _, rec := range records {
-		item, _ := strconv.Atoi(rec[0])
+		rank, _ := strconv.Atoi(rec[0])
 		price, _ := strconv.Atoi(rec[8])
 		vintage, _ := strconv.Atoi(rec[9])
 		score, _ := strconv.Atoi(rec[10])
 
 		w := Wine{
-			Item:        item,
+			Rank:        rank,
 			Name:        rec[1],
 			Country:     rec[2],
 			Region:      rec[3],
 			Style:       rec[4],
 			Description: rec[5],
-			Grape:       rec[6],
+			Grapes:      rec[6],
 			PairWith:    rec[7],
 			AvgPrice:    price,
 			Vintage:     vintage,
@@ -141,38 +146,45 @@ func WineList(records [][]string) []Wine {
 func SearchFor(wineType string, wines []Wine) []Wine {
 	match := []Wine{}
 	for _, w := range wines {
-		if w.Grape == wineType {
+		if w.Grapes == wineType {
 			match = append(match, w)
 		}
 	}
 	if len(match) == 1 {
-		fmt.Println("\n Success,", len(match), "wine is found")
+		fmt.Println("\n Success,", len(match), "item is found")
 	} else if len(match) > 1 {
-		fmt.Println("\n Success,", len(match), "wines are found")
+		fmt.Println("\n Success,", len(match), "items are found")
 	} else {
 		fmt.Printf("Sorry, no %s wine is found \n", wineType)
 	}
 	return match
 }
 
-func WineInfo(results []Wine) (Grape, Name, Style string) {
-
+func WineInfo(results []Wine) []Profile {
+	var profile []Profile
 	for i := range results {
-		Grape = results[i].Grape
-		Name = results[i].Name
-		// Country = results[i].Country
-		// Region = results[i].Country
-		Style = results[i].Style
-		// PairWith = results[i].PairWith
-		// AvgPrice = results[i].AvgPrice
-		// Vintage = results[i].Vintage
-		// Score = results[i].Score
-		// Dec = results[i].Description
+		p := Profile{
+			Grapes:   results[i].Grapes,
+			Name:     results[i].Name,
+			Country:  results[i].Country,
+			Region:   results[i].Region,
+			Style:    results[i].Style,
+			PairWith: results[i].PairWith,
+			// AvgPrice: results[i].AvgPrice,
+			// Vintage:  results[i].Vintage,
+			// Score:    results[i].Score,
+			Desc: results[i].Description,
+		}
+		profile = append(profile, p)
 
-		fmt.Println("\n Wine:", Grape,
-			"\n Name:", Name,
-			"\n Style:", Style,
+		fmt.Println("\n Wine:", p.Grapes,
+			"\n Name:", p.Name,
+			"\n Region:", p.Region,
+			"\n Country:", p.Country,
+			"\n Style:", p.Style,
+			"\n Pairs with:", p.PairWith,
+			"\n Review:", p.Desc,
 		)
 	}
-	return Grape, Name, Style
+	return profile
 }

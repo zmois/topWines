@@ -26,6 +26,9 @@ form {
 color:rgb(221, 221, 221);
 margin: 0 auto;
 }
+input{
+font-size: 24px;
+}
 
 /* ul li {
    

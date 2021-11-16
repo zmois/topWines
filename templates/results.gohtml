@@ -9,13 +9,17 @@
 </head>
 <body>
 <div class = "container">   
-    <h1>{{ .Grape}}</h1>
-    <ul>
-        {{ range .ResultProfile }}
-        <li>{{.Name}}</li>             
-        {{ end }}
-    </ul>
-    
+    <h1>Wine Profile</h1>
+
+    {{ range .Profile }}
+
+    <p> The {{ .Name }} wine is from {{ .Region }}, {{ .Country }}. 
+    It's a {{ .Style }} wine made of {{ .Grapes }} that pairs well with {{ .PairWith }}.
+    For the bottle of this {{ .Vintage }} Vintage wine the average price would be around {{ .AvgPrice }} USD. 
+    The wine is described as {{ .Desc }}. Aggregated Critics Score is {{ .Score }}.
+    </p>
+
+    {{ end }}
 </div>
 </body>
 </html>
