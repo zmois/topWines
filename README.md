@@ -12,8 +12,9 @@ This project is using data 2020 Wine Spectator Top 100 Wines from https://www.wi
 - clone repository: `git@github.com:zmois/topWines.git`
 - run the program: `go run main.go`
 - open the browser and go to [http://localhost:8080](http://localhost:8080)
-- On the main page use the Seacrh function to type the kind of wine you are looking for and then clicl Enter or press Submit.
-- The result of your search request will be printed out on the screen.
+- On the main page use the Seacrh function to type the kind of wine you are looking for and then click Enter or press Submit.
+- The result of your search request will be printed out on the screen. 
+**NOTE** Unfortunately only successful result will be printed out, in case when nothing is found the empty page is show. I am working on fixing this problem
 
 ## Requirements:
 
