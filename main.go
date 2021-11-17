@@ -14,7 +14,6 @@ import (
 // --- Define constants and variables---//
 const filename = "topWines2020.csv"
 
-// var wineType string
 var tpl *template.Template
 
 // Create a struct for storing CSV lines and annotate it with JSON struct field tags
@@ -32,44 +31,26 @@ type Wine struct {
 	Score       int    `json:"score"`
 }
 
-type Profile struct {
-	Header   string
-	Grapes   string
-	Name     string
-	Country  string
-	Region   string
-	Style    string
-	PairWith string
-	AvgPrice string
-	Vintage  string
-	Score    string
-	Desc     string
+func main() {
+	HandleRequests()
 }
 
-func main() {
+// Set up Endpoints
+func HandleRequests() {
 	mux := http.NewServeMux()
 	// --- Serving static css ---//
 	mux.HandleFunc("/", index)
 	mux.Handle("/assets/", http.StripPrefix("/assets", http.FileServer((http.Dir("./served")))))
 	mux.HandleFunc("/search", searchProcess)
-	// mux.HandleFunc("/results", resultProfile)
 	http.ListenAndServe(":8080", mux)
 }
 
-// Set up Endpoints
-// func HandleRequests() {
-// 	http.HandleFunc("/", index)
-// 	// --- Serving static css ---//
-// 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer((http.Dir("./served")))))
-// 	http.HandleFunc("/search", searchResult)
-// 	http.ListenAndServe(":8080", nil)
-// }
-
 func init() {
-	tpl = template.Must(template.ParseGlob("templates/*.gohtml"))
+	tpl = template.Must(template.ParseGlob("templates/*.html"))
 }
+
 func index(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "index.gohtml", nil)
+	tpl.ExecuteTemplate(w, "index.html", nil)
 }
 
 func searchProcess(w http.ResponseWriter, r *http.Request) {
@@ -82,20 +63,11 @@ func searchProcess(w http.ResponseWriter, r *http.Request) {
 		log.Fatal((err))
 	}
 	wines := WineList(records)
-	//---Invoke ParseForm before reading form values ---//
 	r.ParseForm()
-	// wineType := r.FormValue("winename")
 	wineType := strings.Title(r.FormValue("winename"))
 	results := SearchFor(wineType, wines)
-	WineInfo(results)
-
-	tpl.ExecuteTemplate(w, "results.gohtml", nil)
+	tpl.ExecuteTemplate(w, "results.html", results)
 }
-
-// func resultProfile(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Fprintln(w, "Successful")
-// 	tpl.ExecuteTemplate(w, "results.gohtml", nil)
-// }
 
 // --- Loading the Wine List ---//
 func OpenFile(filename string) ([][]string, error) {
@@ -137,7 +109,6 @@ func WineList(records [][]string) []Wine {
 			Score:       score,
 		}
 		wines = append(wines, w)
-		// fmt.Println(wines)
 	}
 	return wines
 }
@@ -150,41 +121,15 @@ func SearchFor(wineType string, wines []Wine) []Wine {
 			match = append(match, w)
 		}
 	}
-	if len(match) == 1 {
-		fmt.Println("\n Success,", len(match), "item is found")
-	} else if len(match) > 1 {
-		fmt.Println("\n Success,", len(match), "items are found")
+	var m int = len(match)
+	if m == 1 {
+		fmt.Println("\n Success,", m, "item is found")
+	} else if m > 1 {
+		fmt.Println("\n Success,", m, "items are found")
 	} else {
 		fmt.Printf("Sorry, no %s wine is found \n", wineType)
 	}
+	// fmt.Println(m)
+	// fmt.Println(match)
 	return match
-}
-
-func WineInfo(results []Wine) []Profile {
-	var profile []Profile
-	for i := range results {
-		p := Profile{
-			Grapes:   results[i].Grapes,
-			Name:     results[i].Name,
-			Country:  results[i].Country,
-			Region:   results[i].Region,
-			Style:    results[i].Style,
-			PairWith: results[i].PairWith,
-			// AvgPrice: results[i].AvgPrice,
-			// Vintage:  results[i].Vintage,
-			// Score:    results[i].Score,
-			Desc: results[i].Description,
-		}
-		profile = append(profile, p)
-
-		fmt.Println("\n Wine:", p.Grapes,
-			"\n Name:", p.Name,
-			"\n Region:", p.Region,
-			"\n Country:", p.Country,
-			"\n Style:", p.Style,
-			"\n Pairs with:", p.PairWith,
-			"\n Review:", p.Desc,
-		)
-	}
-	return profile
 }

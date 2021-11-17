@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+    <title>Search Result</title>
+</head>
+<body>
+<div class = "container">   
+    <h1>Wine Profile</h1>
+<div class = "result">
+          
+<ul>{{ range . }}
+    <li> 
+    <span>&#x2713; </span>
+    The <b>{{ .Name }} </b> wine is from {{ .Region }}, {{ .Country }}.
+    It's a {{ .Style }} wine made of {{ .Grapes }} grapes that pairs well with {{ .PairWith }}.
+    For the bottle of {{ .Vintage }} Vintage wine the average price would be around <b>${{ .AvgPrice }}</b>.</p> 
+    <p> <b>Critics review:</b> {{ .Description }} </p>
+    <p> Aggregated Critics Score is <b>{{ .Score }}</b>.</p>
+    </li>
+    {{ end }}   
+</ul>
+
+ </div>
+
+
+</div>
+</body>
+</html>
